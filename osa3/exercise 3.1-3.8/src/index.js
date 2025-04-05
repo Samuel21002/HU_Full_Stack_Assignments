@@ -8,6 +8,7 @@ const originalSend = app.response.send
 app.use(cors())
 //Middleware
 app.use(express.json())
+app.use(express.static('dist'))
 
 app.response.send = function sendOverWrite(body) {
     originalSend.call(this, body)
