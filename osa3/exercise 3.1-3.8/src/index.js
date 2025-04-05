@@ -1,11 +1,9 @@
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
-const cors = require('cors')
 
 const originalSend = app.response.send
 
-app.use(cors())
 //Middleware
 app.use(express.json())
 app.use(express.static('dist'))
