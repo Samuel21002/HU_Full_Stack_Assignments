@@ -38,6 +38,7 @@ const App = () => {
     ? [...persons.filter(x => x.name.toLowerCase().includes(filterQuery))]
     : persons
 
+  // Endpoint for adding or updating people
   const addOrUpdatePerson = () => {
     event.preventDefault()
     const personObj = {
@@ -47,17 +48,14 @@ const App = () => {
     const personToUpdate = persons.find(n => n.name.toLowerCase() === newName.toLowerCase())
     if (personToUpdate) {
       // Asks whether old number will be replaced
+      personObj.id = personToUpdate.id
       if (window.confirm(`${newName} is already added to phonebook. Do you want to replace the number?`)) {
         personService.updatePerson(personToUpdate.id, personObj)
         .then(res => {
-          setPersons([...persons.map(person => person.id !== res.id ? person : res)])
+          setPersons([...persons.map(person => person.id !== res.id ? person : personObj)])
           setMessage(`User ${personObj.name} number changed!`, false)
         }).catch(e => {
-          if (e.response && e.response.status === 404) {
-            setMessage(`User ${personObj.name} does not exist`, true);
-          } else {  // For other errors
-            setMessage(`Error updating user: ${e.message}`, true);
-          }
+          setMessage(`Error updating user: ${e.response.data.error}`, true);
         });
       } else {
         setMessage(`Create operation cancelled!`, true)
@@ -69,7 +67,7 @@ const App = () => {
         setPersons(persons.concat(person))
         changeFilter('');
       }).catch(e => {
-        setMessage(`ERROR! : '${e}'`, true)
+        setMessage(`Error : ${e.response.data.error}`, true)
       });
     }
     setNewName(''); setNewPhoneNr('');
@@ -77,10 +75,10 @@ const App = () => {
 
   const removePerson = (event) => {
     const id = event.target.dataset.id
-    if (window.confirm("Do you want to open in new tab?")) {
+    if (window.confirm("Do you want to delete this person?")) {
       personService.deletePerson(id)
       .then(res => {
-        setPersons([...persons.filter(person => person.id !== res.id)])
+        setPersons(persons.filter(person => person.id !== id))
         setMessage(`User deleted!`, false)
       }).catch(e => {
         if (e.response && e.response.status === 404) {
