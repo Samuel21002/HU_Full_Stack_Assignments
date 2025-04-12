@@ -10,20 +10,21 @@ app.use(express.static('dist'))
 app.use(express.json())
 
 app.response.send = function sendOverWrite(body) {
-    originalSend.call(this, body)
-    this.__custombody__ = body
+  originalSend.call(this, body)
+  this.__custombody__ = body
 }
 
 // Create two logging variables, loggingWithoutBody for GET methods and loggingWithBody for POST
 morgan.token('response-body', (req, res) => {
-    try {
-        // Try to parse, but catch errors
-        return JSON.stringify(JSON.parse(res.__custombody__));
-    } catch (e) {
-        // If it fails, just return the body as-is or empty string
-        return res.__custombody__ || '';
-    }
-});
+  try {
+    // Try to parse, but catch errors
+    return JSON.stringify(JSON.parse(res.__custombody__))
+  // eslint-disable-next-line no-unused-vars
+  } catch (e) {
+    // If it fails, just return the body as-is or empty string
+    return res.__custombody__ || ''
+  }
+})
 const loggingWithoutBody = morgan('tiny')
 const loggingWithBody = morgan(':method :url :status :res[content-length] - :response-time ms :response-body')
 
@@ -32,13 +33,13 @@ const loggingWithBody = morgan(':method :url :status :res[content-length] - :res
 app.get('/api/persons', loggingWithoutBody, (request, response, next) => {
   Person.find({}).then(persons => {
     if (!persons) {
-      return response.status(500).json({ 
-        error: 'Cannot get persons from server' 
+      return response.status(500).json({
+        error: 'Cannot get persons from server'
       })
     }
     response.json(persons)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 //CREATE NEW PERSON
@@ -53,7 +54,7 @@ app.post('/api/persons', loggingWithBody, (request, response, next) => {
   person.save().then(savedObj => {
     response.json(savedObj)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 //GET PERSON
@@ -81,26 +82,26 @@ app.put('/api/persons/:id', loggingWithBody, (request, response, next) => {
   }
 
   // Add options object with runValidators: true
-  const options = { 
-    new: true, 
-    runValidators: true  
+  const options = {
+    new: true,
+    runValidators: true
   }
 
   Person.findByIdAndUpdate(id, updatedPerson, options)
-  .then(person => {
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).send({ error: `Cannot find person with the ID: ${id}` })
-    }
-  })
-  .catch(error => next(error))
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).send({ error: `Cannot find person with the ID: ${id}` })
+      }
+    })
+    .catch(error => next(error))
 })
 
 //DELETE
 app.delete('/api/persons/:id', loggingWithBody, (request, response, next) => {
-    const id = request.params.id
-    Person.findByIdAndDelete(id)
+  const id = request.params.id
+  Person.findByIdAndDelete(id)
     .then(result => {
       if (!result) {
         return response.status(404).send({ error: `Cannot find person with the ID: ${id}` })
@@ -111,16 +112,16 @@ app.delete('/api/persons/:id', loggingWithBody, (request, response, next) => {
 })
 
 //INFO
-app.get('/api/info', loggingWithoutBody, (request, response) => {
+app.get('/api/info', loggingWithoutBody, (request, response, next) => {
   Person.find({}).then(persons => {
     if (!persons) {
-      return response.status(500).json({ 
-        error: 'Cannot get people from server' 
+      return response.status(500).json({
+        error: 'Cannot get people from server'
       })
     }
     response.end(`Phonebook has info for ${persons.length} people\n${new Date(Date.now())}`)
   })
-  .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 
@@ -150,5 +151,5 @@ app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`)
 })
