@@ -8,7 +8,7 @@ const testBlogs = [
     title: 'React patterns',
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
-    likes: 7,
+    likes: 10,
     __v: 0
   },
   {
