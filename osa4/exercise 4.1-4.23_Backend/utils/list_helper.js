@@ -48,7 +48,7 @@ const testBlogs = [
     title: 'Type wars',
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
-    likes: 2,
+    likes: 3,
     __v: 0
   }
 ]
@@ -62,9 +62,10 @@ const totalLikes = (blogs) => {
   const likeCounter = (sum, blog) => {
     return sum + blog.likes
   }
-  return blogs.length === 0 ? 0 : blogs.reduce(likeCounter, 0) / blogs.length
+  return blogs.length === 0 ? 0 : blogs.reduce(likeCounter, 0)
 }
 
+// Every object is iterated upon and in the succeeding blog has more likes than the previous then return that blog
 const favoriteBlog = (blogs) => {
   const mostLikes = blogs.reduce((max, blog) => (blog.likes > max.likes ? blog : max), blogs[0])
   return mostLikes

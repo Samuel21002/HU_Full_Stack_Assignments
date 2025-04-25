@@ -21,9 +21,9 @@ describe('Testing API endpoints 4:8-4:10', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
-  test('blogs initial amount is 2', async () => {
+  test('blogs initial amount is 6', async () => {
     const response = await api.get('/api/blogs')
-    const content = response.body.map(r => r.content)
+    const content = response.body
     assert.strictEqual(content.length, testBlogs.length)
   })
   test('returned blogs contain "ID" in the correct format', async () => {
@@ -31,8 +31,9 @@ describe('Testing API endpoints 4:8-4:10', () => {
     const contents = Object.values(response.body).every(blog => blog.hasOwnProperty('id'))
     assert.strictEqual(contents, true)
   })
-  test('add blog with correct format', async () => {
-
+  test('add blog successfully to database and verify content', async () => {
+      
+    const allBlogsAtStart = await blogsFromDb()
     const newBlog = {
       'title': 'Test',
       'author': 'Test Writer',
@@ -46,9 +47,10 @@ describe('Testing API endpoints 4:8-4:10', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    const allBlogs = await blogsFromDb()
-    assert.strictEqual(allBlogs.length, 7)
-    const contents = allBlogs.map(n => {
+    const allBlogsInTheEnd = await blogsFromDb()
+    assert.strictEqual(allBlogsInTheEnd.length, allBlogsAtStart.length + 1)
+
+    const contents = allBlogsInTheEnd.map(n => {    // Only compare the crucial object properties
       return {
         'title': n.title,
         'author': n.author,
@@ -77,16 +79,9 @@ describe('Bonus excercise tests 4:11-4:12', () => {
       .expect('Content-Type', /application\/json/)
 
     const allBlogs = await blogsFromDb()
-    const contents = allBlogs.map(n => {
-      return {
-        'title': n.title,
-        'author': n.author,
-        'url': n.url,
-        'likes': n.likes
-      }
-    })
-    info('Added Object Body:\n',contents[contents.length-1])
-    assert.strictEqual(contents[contents.length-1].likes, Number(0))
+
+    info('Added Object Body:\n',allBlogs[allBlogs.length-1])
+    assert.strictEqual(allBlogs[allBlogs.length-1].likes, Number(0))
   })
   test('add blog without title or url', async () => {
 
@@ -102,7 +97,6 @@ describe('Bonus excercise tests 4:11-4:12', () => {
       .expect('Content-Type', /application\/json/)
 
     info('Error received:', response.body.error)
-    assert.strictEqual(response.statusCode, 400)
     assert.strictEqual(response.body.error, 'Blog validation failed: url: URL is required, title: Title is required')
   })
 })
@@ -110,7 +104,7 @@ describe('Bonus excercise tests 4:11-4:12', () => {
 describe('Assignment 4:13', () => {
   test('test for succesful deletion', async () => {
     const blogsAtStart = await blogsFromDb()
-    const blogToDelete = blogsAtStart[0]
+    const blogToDelete = blogsAtStart[0]   // Get only the first blog
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
@@ -145,7 +139,7 @@ describe('Assignment 4:14', () => {
       .put(`/api/blogs/${blogToUpdate[0].id}`)
       .expect(200)
     const blogUpdated = await blogsFromDb()
-    assert.strictEqual(blogUpdated[0].likes, 11)
+    assert.strictEqual(blogUpdated[0].likes, 11)    // First blog has a default like count of 10
   })
   test('test for failed update - malformatted id', async () => {
     await api
@@ -157,7 +151,7 @@ describe('Assignment 4:14', () => {
     await api
       .put('/api/blogs/680a6209ba29a35ba2e7be93')
       .expect(404)
-    assert.strictEqual(blogsAtStart[0].likes, 10)
+    assert.strictEqual(blogsAtStart[0].likes, 10)   // First blog has a default like count of 10
   })
 })
 
