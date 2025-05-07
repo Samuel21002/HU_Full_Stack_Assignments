@@ -32,13 +32,15 @@ describe('Testing API endpoints 4:8-4:10', () => {
     assert.strictEqual(contents, true)
   })
   test('add blog successfully to database and verify content', async () => {
-      
+
     const allBlogsAtStart = await blogsFromDb()
+
     const newBlog = {
       'title': 'Test',
       'author': 'Test Writer',
       'url': 'www.test.fi',
       'likes': 6,
+      'user':'12345'
     }
 
     await api

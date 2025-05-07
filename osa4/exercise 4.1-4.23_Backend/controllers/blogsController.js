@@ -1,21 +1,42 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const logger = require('../utils/logger')
 
 // GET ALL BLOGS
 blogsRouter.get('/', logger.routeLogger, async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
   return response.json(blogs)
 })
 
 // POST NEW BLOG
 blogsRouter.post('/', logger.routeLogger, async (request, response) => {
-  const blog = new Blog(request.body)
-  const result =  await blog.save()
+
+  const { title, author, url, likes } = request.body
+  const userObj = await User.findById(request.user)
+  if (!userObj) {
+    return response.status(401).json({ error: 'user not logged in' })
+  }
+
+  const blogObj = new Blog(
+    {
+      title:title,
+      author:author,
+      url:url,
+      likes:likes,
+      user: userObj._id
+    }
+  )
+
+  const result =  await blogObj.save()
+
+  userObj.blogs = userObj.blogs.concat(blogObj._id)
+  await userObj.save()
+
   response.status(201).json(result)
 })
 
-// PUT - Currently only increments likes
+// PUT - Currently only increments likes and is used for test exercises
 blogsRouter.put('/:id', logger.routeLogger, async (request, response) => {
   const id = request.params.id
   const blog = await Blog.findByIdAndUpdate(id, { $inc: { likes: 1 } }, { new: true })
@@ -30,11 +51,24 @@ blogsRouter.put('/:id', logger.routeLogger, async (request, response) => {
 // DELETE A BLOG
 blogsRouter.delete('/:id', logger.routeLogger, async (request, response) => {
   const id = request.params.id
-  const result = await Blog.findByIdAndDelete(id)
-  if (!result) {
+  const blogObj = await Blog.findById(id)
+  const userObj = await User.findById(request.user)
+  if (!userObj) {
+    return response.status(401).json({ error: 'user not logged in' })
+  }
+
+  if (!blogObj) {
     return response.status(404).send({ error: `Cannot find blog with the ID: ${id}` })
   }
-  response.status(204).send('Blog deleted')
+  if (blogObj.user.toString() !== userObj._id.toString()) {
+    return response.status(404).send({ error: `Deletion of blog by user ${decodedToken.username} not allowed` })
+  }
+  await blogObj.deleteOne()
+
+  userObj.blogs = userObj.blogs.filter(blog => blog.toString() !== id)
+  await userObj.save()
+
+  return response.status(204).send('Blog deleted')
 })
 
 module.exports = blogsRouter
