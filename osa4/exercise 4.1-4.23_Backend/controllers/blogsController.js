@@ -53,15 +53,12 @@ blogsRouter.delete('/:id', logger.routeLogger, async (request, response) => {
   const id = request.params.id
   const blogObj = await Blog.findById(id)
   const userObj = await User.findById(request.user)
-  if (!userObj) {
-    return response.status(401).json({ error: 'user not logged in' })
-  }
 
   if (!blogObj) {
-    return response.status(404).send({ error: `Cannot find blog with the ID: ${id}` })
+    return response.status(404).send({ error: `Cannot find Blog with the ID: ${id}` })
   }
   if (blogObj.user.toString() !== userObj._id.toString()) {
-    return response.status(404).send({ error: `Deletion of blog by user ${decodedToken.username} not allowed` })
+    return response.status(403).send({ error: `Deletion of blog by user ${blogObj.user} not allowed` })
   }
   await blogObj.deleteOne()
 

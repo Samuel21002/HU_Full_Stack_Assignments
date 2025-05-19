@@ -19,9 +19,9 @@ const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization')
   if (authorization && authorization.startsWith('Bearer ')) {
     request.token = authorization.replace('Bearer ', '')
-    console.log('Token extracted:', request.token)
+    logger.info('Token extracted:', request.token)
   } else {
-    console.log('No valid authorization header found')
+    logger.info('No valid authorization header found')
   }
   next()
 }
@@ -40,7 +40,7 @@ const errorHandler = (error, request, response, next) => {
     }
     break
   case 'JsonWebTokenError':
-    return response.status(400).json({ error: 'token missing or invalid' })
+    return response.status(401).json({ error: 'token missing or invalid' })
   case 'TokenExpiredError':
     return response.status(401).json({
       error: 'token expired'

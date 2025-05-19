@@ -80,6 +80,7 @@ const favoriteBlogWithLodash = (blogs) => {
 const mostBlogs = (blogs) => {
   const authorBlogsCount = _.countBy(blogs, 'author')
   const mostPopularBlogger = _.maxBy(_.keys(authorBlogsCount), author => authorBlogsCount[author])
+
   return {
     author: mostPopularBlogger,
     blogs: authorBlogsCount[mostPopularBlogger]

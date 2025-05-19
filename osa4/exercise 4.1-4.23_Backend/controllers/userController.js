@@ -13,7 +13,7 @@ userRouter.get('/', logger.routeLogger, async (request, response) => {
 userRouter.post('/', logger.routeLogger, async (request, response) => {
   const { username, name, password } = request.body
 
-  if (!(password !== undefined && password.length >= 3)) return response.status(400).json({ error: 'password is invalid, verify the minimum length is 3' })
+  if (!(password !== undefined && password.length >= 3)) return response.status(400).json({ error: 'password is invalid or minimum length is not 3' })
 
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)

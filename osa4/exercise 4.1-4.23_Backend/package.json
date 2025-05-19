@@ -1,8 +1,9 @@
 {
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "cross-env NODE_ENV=development node --watch index.js --trace-warnings",
+    "dev": "cross-env NODE_ENV=dev node --watch index.js --trace-warnings",
     "test": "cross-env NODE_ENV=test node --test --test-concurrency=1",
+    "tests:all": "cross-env NODE_ENV=test node --test --test-concurrency=1 tests/**/*.js",
     "lint": "eslint ."
   },
   "dependencies": {
