@@ -29,17 +29,16 @@ blogsRouter.post('/', logger.routeLogger, async (request, response) => {
   )
 
   const result =  await blogObj.save()
-
   userObj.blogs = userObj.blogs.concat(blogObj._id)
   await userObj.save()
 
-  response.status(201).json(result)
+  response.status(201).json(await result.populate('user', { username: 1, name: 1 }))
 })
 
 // PUT - Currently only increments likes and is used for test exercises
 blogsRouter.put('/:id', logger.routeLogger, async (request, response) => {
   const id = request.params.id
-  const blog = await Blog.findByIdAndUpdate(id, { $inc: { likes: 1 } }, { new: true })
+  const blog = await Blog.findByIdAndUpdate(id, { $inc: { likes: 1 } }, { new: true }).populate('user', { username: 1, name: 1 })
   if (blog) {
     console.log(`The blog "${blog.title}" like count incremented to ${blog.likes}`)
     response.json(blog)

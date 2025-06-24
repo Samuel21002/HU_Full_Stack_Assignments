@@ -84,7 +84,7 @@ const App = () => {
         if (e.response && e.response.status === 404) {
           setMessage(`User was already removed from server`, true);
         } else {
-          setMessage(`Error updating user: ${error.message}`, true);
+          setMessage(`Error updating user: ${e.message}`, true);
         }
       });
     } 

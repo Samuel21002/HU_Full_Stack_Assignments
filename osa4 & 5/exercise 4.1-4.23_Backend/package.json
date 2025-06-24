@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
+    "start:test": "NODE_ENV=test node index.js",
     "dev": "cross-env NODE_ENV=dev node --watch index.js --trace-warnings",
     "test": "cross-env NODE_ENV=test node --test --test-concurrency=1",
     "tests:all": "cross-env NODE_ENV=test node --test --test-concurrency=1 tests/**/*.js",
@@ -8,6 +9,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",

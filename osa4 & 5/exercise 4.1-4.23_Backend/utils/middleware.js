@@ -1,5 +1,4 @@
-const { request } = require('../app')
-const logger = require('../utils/logger')
+const logger = require('./logger')
 const jwt = require('jsonwebtoken')
 
 const userExtractor = (request, response, next) => {
