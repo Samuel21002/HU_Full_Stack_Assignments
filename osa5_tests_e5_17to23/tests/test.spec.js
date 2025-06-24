@@ -39,6 +39,7 @@ describe('Blog app', () => {
       const response = await responsePromise
       expect(response.status()).toBe(401)
       expect(page.getByText('Log Out')).not.toBeVisible()
+      await expect(page.locator('#messageBox')).toContainText('wrong credentials')
     })
   })
 
@@ -61,6 +62,8 @@ describe('Blog app', () => {
       // Check that there are only one added blog containing the title of the added blog and an expand button
       const sectionCount = await allDescendantDivs.count()
       expect(sectionCount).toBe(1)
+
+      await expect(page.locator('#messageBox')).toContainText('New blog Testuser blog by Testuser added')
       await expect(allDescendantDivs.locator('div > strong').first()).toContainText('Testuser blog')
     })
     test('a blog can be liked', async({ page }) => {
