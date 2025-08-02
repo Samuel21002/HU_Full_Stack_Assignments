@@ -4,7 +4,7 @@ import { useMutation } from "@apollo/client";
 import PropTypes from "react-proptypes";
 import { LOGIN } from "../queries";
 
-const LoginForm = ({ setToken, show }) => {
+const LoginForm = ({ setToken, show, setPage }) => {
   const username = useField("text");
   const password = useField("password");
 
@@ -20,7 +20,7 @@ const LoginForm = ({ setToken, show }) => {
       setToken(token);
       localStorage.setItem("user-token", token);
     }
-  }, [result.data]);
+  }, [result.data, setToken]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -30,6 +30,7 @@ const LoginForm = ({ setToken, show }) => {
         password: password.attributes.value,
       },
     });
+    setPage("books")
     username.resetfield();
     password.resetfield();
   };
@@ -54,6 +55,7 @@ const LoginForm = ({ setToken, show }) => {
 
 LoginForm.propTypes = {
   setToken: PropTypes.func.isRequired,
-  show: PropTypes.string
+  setPage: PropTypes.func.isRequired,
+  show: PropTypes.bool
 };
 export default LoginForm;

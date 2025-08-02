@@ -1,6 +1,10 @@
 import { useMutation } from "@apollo/client";
 import { useState } from "react";
 import { ALL_BOOKS, CREATE_BOOK } from "../queries";
+import {
+  useNotificationDispatch,
+  setNotification as setMessage,
+} from "../context";
 
 const NewBook = (props) => {
   const [title, setTitle] = useState("");
@@ -8,19 +12,32 @@ const NewBook = (props) => {
   const [published, setPublished] = useState(0);
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
+  const dispatch = useNotificationDispatch();
 
   const [createBook] = useMutation(CREATE_BOOK, {
     onError: (error) => {
       console.error("Mutation error:", error);
+
       if (error.graphQLErrors?.length) {
-        error.graphQLErrors.forEach(({ message, locations, path }) => {
-          console.error(
-            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
-          );
-        });
-      }
-      if (error.networkError) {
+        error.graphQLErrors.forEach(
+          ({ message, extensions, locations, path }) => {
+            console.error(
+              `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+            );
+
+            // Check if detailed error info exists and set it in state
+            if (extensions?.error) {
+              setMessage(dispatch, extensions.error, 5, true);
+            } else {
+              setMessage(dispatch, message, 5, true);
+            }
+          },
+        );
+      } else if (error.networkError) {
         console.error(`[Network error]: ${error.networkError}`);
+        setMessage(dispatch, "Network error occurred", 5, true);
+      } else {
+        setMessage(dispatch, "An unknown error occurred", 5, true);
       }
     },
     update: (cache, response) => {
@@ -39,9 +56,6 @@ const NewBook = (props) => {
 
   const submit = async (event) => {
     event.preventDefault();
-
-    console.log(title, author, published, genres);
-    console.log("add book...");
     createBook({ variables: { title, author, published, genres } });
     // eslint-disable-next-line react/prop-types
     props.setPage("books");
