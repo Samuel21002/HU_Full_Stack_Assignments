@@ -52,5 +52,3 @@ appRouter.post(
 				}*/
 	}
 );
-
-export default appRouter;
