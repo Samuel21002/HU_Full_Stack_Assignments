@@ -4,6 +4,8 @@ import * as yup from "yup";
 import Text from './Text';
 import TextInput from './TextInput';
 import theme from "../theme";
+import { useSignIn } from "../hooks/userSignin";
+import { useNavigate } from "react-router-native";
 
 const styles = {
   button: {
@@ -45,7 +47,6 @@ const SigninForm = ({ onSubmit }) => {
 		},
     validationSchema,
 		onSubmit: (values) => {
-			// Only call onSubmit if form is valid
 			if (formik.isValid) {
 				onSubmit(values);
 			}
@@ -53,7 +54,6 @@ const SigninForm = ({ onSubmit }) => {
 	});
 
 	const handleSubmit = () => {
-		// Mark all fields as touched to show validation errors
 		formik.setTouched({
 			username: true,
 			password: true,
@@ -98,9 +98,22 @@ const SigninForm = ({ onSubmit }) => {
 };
 
 const SignIn = () => {
-	const onSubmit = (values) => {
-		console.log(values);
+	const [signIn] = useSignIn();
+	const navigate = useNavigate();
+
+	const onSubmit = async (values) => {
+		const { username, password } = values;
+
+		try {
+			const data = await signIn({ username, password });
+			if (data && data.authenticate && data.authenticate.accessToken) {
+				navigate("/");
+			}
+		} catch (e) {
+			console.error('Sign in error:', e);
+		}
 	};
+
 	return <SigninForm onSubmit={onSubmit} />;
 };
 

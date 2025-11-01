@@ -3,6 +3,7 @@ import { StyleSheet, View } from "react-native";
 import RepositoryList from "./RepositoryList";
 import AppBar from "./AppBar";
 import SignIn from "./SignIn";
+import SignOut from "./SignOut";
 
 const styles = StyleSheet.create({
 	container: {
@@ -19,6 +20,7 @@ const Main = () => {
 			<Routes>
 				<Route path="/" element={<RepositoryList />} />
 				<Route path="/login" element={<SignIn />} />
+				<Route path="/logout" element={<SignOut />} />
 				<Route path="*" element={<Navigate to="/" replace />} />
 			</Routes>
 		</View>
