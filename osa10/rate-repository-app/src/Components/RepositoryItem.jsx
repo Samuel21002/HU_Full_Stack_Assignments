@@ -1,14 +1,8 @@
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, Pressable } from 'react-native';
+import * as Linking from 'expo-linking';
 import Text from './Text';
 import theme from '../theme';
-
-// Helper function to format large numbers
-const formatCount = (count) => {
-  if (count >= 1000) {
-    return (count / 1000).toFixed(1) + 'k';
-  }
-  return count.toString();
-};
+import { formatCount } from '../utils/formatting';
 
 // Component for displaying repository statistics
 const StatItem = ({ label, value }) => (
@@ -28,6 +22,20 @@ const LanguageTag = ({ language }) => (
     <Text style={styles.languageText}>{language}</Text>
   </View>
 );
+
+const GitHubButton = ({ url }) => {
+  const handlePress = () => {
+    Linking.openURL(url);
+  };
+
+  return (
+    <Pressable style={styles.githubButton} onPress={handlePress}>
+      <Text style={styles.githubButtonText} fontWeight="bold">
+        Open in GitHub
+      </Text>
+    </Pressable>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -79,12 +87,22 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
   },
+  githubButton: {
+    backgroundColor: theme.colors.primary,
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  githubButtonText: {
+    color: 'white',
+    fontSize: theme.fontSizes.subheading,
+  },
 });
 
-const RepositoryItem = ({ repository }) => {
+const RepositoryItem = ({ repository, showGitHubButton = false }) => {
   return (
-    <View style={styles.container}>
-      {/* Header with avatar and basic info */}
+    <View testID="repositoryItem" style={styles.container}>
       <View style={styles.headerContainer}>
         <Image source={{ uri: repository.ownerAvatarUrl }} style={styles.avatar} />
         <View style={styles.infoContainer}>
@@ -100,13 +118,15 @@ const RepositoryItem = ({ repository }) => {
         </View>
       </View>
       
-      {/* Statistics */}
       <View style={styles.statsContainer}>
         <StatItem label="Stars" value={repository.stargazersCount} />
         <StatItem label="Forks" value={repository.forksCount} />
         <StatItem label="Reviews" value={repository.reviewCount} />
         <StatItem label="Rating" value={repository.ratingAverage} />
       </View>
+      {showGitHubButton && repository.url && (
+        <GitHubButton url={repository.url} />
+      )}
     </View>
   );
 };

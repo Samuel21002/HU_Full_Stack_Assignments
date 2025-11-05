@@ -6,4 +6,7 @@ export { default as AppBarTab } from './AppBarTab';
 export { default as Main } from './Main';
 export { default as RepositoryItem } from './RepositoryItem';
 export { default as RepositoryList } from './RepositoryList';
+export { default as RepositoryListItem } from './RepositoryListItem';
+export { default as SingleRepository } from './SingleRepository';
 export { default as SignIn } from './SignIn';
+export { default as CreateReview } from './CreateReview';

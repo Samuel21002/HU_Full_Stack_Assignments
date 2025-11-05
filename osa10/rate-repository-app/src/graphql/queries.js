@@ -29,3 +29,33 @@ export const GET_SIGNED_IN_USER = gql`
 	}
 `;
 
+export const GET_REPOSITORY = gql`
+	query Repository($repositoryId: ID!) {
+		repository(id: $repositoryId) {
+			id
+			fullName
+			reviewCount
+			ratingAverage
+			stargazersCount
+			forksCount
+			ownerAvatarUrl
+			description
+			language
+			url
+			reviews {
+				edges {
+					node {
+						id
+						text
+						rating
+						createdAt
+						user {
+							id
+							username
+						}
+					}
+				}
+			}
+		}
+	}
+`;

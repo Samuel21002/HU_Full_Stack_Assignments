@@ -4,6 +4,7 @@ const theme = {
 	colors: {
 		textPrimary: '#24292e',
 		textSecondary: '#586069',
+		headers: '#088d38ff',
 		primary: '#0366d6',
 		appbar: '#24292e',
 		error: '#d73a49',
