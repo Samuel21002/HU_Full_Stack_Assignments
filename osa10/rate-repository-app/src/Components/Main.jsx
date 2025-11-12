@@ -8,7 +8,7 @@ import SignUp from "./SignUp";
 import SignOut from "./SignOut";
 import CreateReview from "./CreateReview";
 import Notification from "./Notification";
-import RepositoryResultsFilter from "./RepositoryResultsFilter";
+import MyReviews from "./MyReviews";
 
 const styles = StyleSheet.create({
 	container: {
@@ -25,6 +25,7 @@ const Main = () => {
 			<Routes>
 				<Route path="/" element={<RepositoryList />} />
 				<Route path="/repository/:id" element={<SingleRepository />} />
+				<Route path="/my-reviews" element={<MyReviews />} />
 				<Route path="/create-review" element={<CreateReview />} />
 				<Route path="/login" element={<SignIn />} />
 				<Route path="/signup" element={<SignUp />} />

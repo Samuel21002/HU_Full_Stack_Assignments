@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
+import TextInput from './TextInput';
 import theme from '../theme';
 
-const RepositoryResultsFilter = ({ filter, onFilterChange }) => {
+const RepositoryResultsFilter = ({ filter, onFilterChange, searchKeyword, onSearchChange }) => {
     const handleTypePress = (type) => {
         const newFilter = { ...filter, Type: type };
         onFilterChange(newFilter);
@@ -29,6 +30,15 @@ const RepositoryResultsFilter = ({ filter, onFilterChange }) => {
                     <Text style={styles.text}>Most Popular</Text>
                 </Pressable>
             </View>
+            {/* Text Input for Search */}
+            <View style={styles.centerContainer}>
+                <TextInput 
+                    style={{ width: 200, marginBottom: 0 }} 
+                    placeholder="Search..." 
+                    value={searchKeyword}
+                    onChangeText={onSearchChange}
+                />
+            </View>
             <View style={styles.rightContainer}>
                 <Pressable
                     style={[styles.button, filter.SortBy === 'ASC' && styles.selected]}
@@ -51,9 +61,13 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         padding: 10,
     },
     leftContainer: {
+        flexDirection: 'row',
+    },
+    centerContainer: {
         flexDirection: 'row',
     },
     rightContainer: {

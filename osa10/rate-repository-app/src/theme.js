@@ -25,6 +25,14 @@ const theme = {
 		normal: '400',
 		bold: '700',
 	},
+	input: {
+   	 	height: 40,
+   	 	borderColor: '#586069',
+   	 	borderWidth: 1,
+   	 	marginBottom: 12,
+   		paddingHorizontal: 8,
+    	borderRadius: 4,
+	},
 };
 
 export default theme;

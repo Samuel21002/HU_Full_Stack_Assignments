@@ -1,6 +1,7 @@
+import React, { useState, useMemo } from "react";
 import { FlatList, View, StyleSheet } from "react-native";
 import RepositoryListItem from "./RepositoryListItem";
-import { useState, useMemo } from "react";
+import { useDebounce } from 'use-debounce';
 import useRepositories from '../hooks/useRepositories';
 import RepositoryResultsFilter from './RepositoryResultsFilter';
 
@@ -19,37 +20,52 @@ const styles = StyleSheet.create({
 const ItemSeparator = () => <View style={styles.separator} />;
 
 // Presentational component that receives repositories as props
-export const RepositoryListContainer = ({ repositories, filter, onFilterChange }) => {
-	const repositoryNodes = repositories
-		? repositories.edges.map((edge) => edge.node)
-		: [];
+export class RepositoryListContainer extends React.Component {
+	renderHeader = () => {
+		const { filter, onFilterChange, searchKeyword, onSearchChange } = this.props;
+		
+		return (
+			<RepositoryResultsFilter 
+				filter={filter} 
+				onFilterChange={onFilterChange}
+				searchKeyword={searchKeyword}
+				onSearchChange={onSearchChange}
+			/>
+		);
+	};
 
-	const ListHeaderComponent = () => (
-		<RepositoryResultsFilter filter={filter} onFilterChange={onFilterChange} />
-	);
+	render() {
+		const { repositories } = this.props;
+		const repositoryNodes = repositories
+			? repositories.edges.map((edge) => edge.node)
+			: [];
 
-	return (
-		<FlatList
-			data={repositoryNodes}
-			ItemSeparatorComponent={ItemSeparator}
-			renderItem={({ item }) => <RepositoryListItem repository={item} />}
-			keyExtractor={(item) => item.id}
-			ListHeaderComponent={ListHeaderComponent}
-			style={styles.container}
-			contentContainerStyle={styles.listContent}
-			showsVerticalScrollIndicator={true}
-		/>
-	);
-};
+		return (
+			<FlatList
+				data={repositoryNodes}
+				ItemSeparatorComponent={ItemSeparator}
+				renderItem={({ item }) => <RepositoryListItem repository={item} />}
+				keyExtractor={(item) => item.id}
+				ListHeaderComponent={this.renderHeader}
+				style={styles.container}
+				contentContainerStyle={styles.listContent}
+				showsVerticalScrollIndicator={true}
+			/>
+		);
+	}
+}
 
 // Container component that fetches data and passes it to the presentational component
 const RepositoryList = () => {
 	const [filter, setFilter] = useState({ Type: 'CREATED_AT', SortBy: 'DESC' });
+	const [searchKeyword, setSearchKeyword] = useState('');
+	const [debouncedSearchKeyword] = useDebounce(searchKeyword, 500);
 	
 	const variables = useMemo(() => ({
 		orderBy: filter.Type,
 		orderDirection: filter.SortBy,
-	}), [filter.Type, filter.SortBy]);
+		searchKeyword: debouncedSearchKeyword,
+	}), [filter.Type, filter.SortBy, debouncedSearchKeyword]);
 	
 	const { repositories, loading, error } = useRepositories(variables);
 	
@@ -61,7 +77,9 @@ const RepositoryList = () => {
 			<RepositoryListContainer 
 				repositories={repositories} 
 				filter={filter} 
-				onFilterChange={setFilter} 
+				onFilterChange={setFilter}
+				searchKeyword={searchKeyword}
+				onSearchChange={setSearchKeyword}
 			/>
 		</View>
 	);

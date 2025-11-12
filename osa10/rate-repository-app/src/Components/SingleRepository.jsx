@@ -1,4 +1,3 @@
-import React from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { useParams } from "react-router-native";
 import useRepository from "../hooks/useRepository";
