@@ -3,11 +3,13 @@ import { Platform } from 'react-native';
 const theme = {
 	colors: {
 		textPrimary: '#24292e',
+		textPrimaryLight: '#7eb7f8ff',
 		textSecondary: '#586069',
 		headers: '#088d38ff',
 		primary: '#0366d6',
 		appbar: '#24292e',
 		error: '#d73a49',
+		errorText: '#ffffff',
 	},
 	fontSizes: {
 		body: 14,

@@ -26,6 +26,10 @@ export default defineConfig([{
 	languageOptions: {
 		globals: {
 			...reactNative.environments['react-native']['react-native'],
+			setTimeout: 'readonly',
+			clearTimeout: 'readonly',
+			setInterval: 'readonly',
+			clearInterval: 'readonly',
 		},
 
 		parser: babelParser,

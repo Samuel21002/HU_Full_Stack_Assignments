@@ -13,7 +13,7 @@ const createApolloClient = authStorage => {
 				},
 			};
 		} catch (e) {
-			// eslint-disable-next-line no-undef
+			// eslint-disable-next-line no-console, no-undef
 			console.log(e);
 			return {
 				headers,
@@ -27,7 +27,25 @@ const createApolloClient = authStorage => {
 				uri: Constants.expoConfig.extra.apolloUri,
 			}),
 		),
-		cache: new InMemoryCache(),
+		cache: new InMemoryCache({
+			typePolicies: {
+				Query: {
+					fields: {
+						repositories: {
+							// Cache repositories separately by their arguments to enable smooth filtering
+							keyArgs: ['orderBy', 'orderDirection', 'searchKeyword'],
+							// Merge function to handle pagination and updates
+							merge(_existing = { edges: [] }, incoming) {
+								return {
+									...incoming,
+									edges: incoming.edges || [],
+								};
+							},
+						},
+					},
+				},
+			},
+		}),
 	});
 };
 

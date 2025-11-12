@@ -4,7 +4,7 @@ import * as yup from "yup";
 import Text from "./Text";
 import TextInput from "./TextInput";
 import theme from "../theme";
-import { useSignIn } from "../hooks/userSignin";
+import { useSignUp } from "../hooks/userSignup";
 import { useNavigate } from "react-router-native";
 import { useNotification } from "../contexts/NotificationContext";
 
@@ -31,19 +31,24 @@ const styles = {
 	},
 };
 
-const validationSchema = yup.object().shape({
+const validationSchema = yup.object({
 	username: yup.string().required("Username is required"),
-	password: yup.string().required("Password is required"),
+	password: yup.string().min(8).required("Password is required"),
+	password_again: yup
+		.string()
+		.oneOf([yup.ref("password"), null], "Password confirmation must match")
+		.required("Password confirmation is required"),
 });
 
 // Pure form component for testing - only handles form presentation and validation
 export const SignInForm = ({ onSubmit }) => {
 	const formik = useFormik({
-		initialValues : {
+		initialValues: {
 			username: "",
 			password: "",
+			password_again: "",
 		},
-    	validationSchema,
+		validationSchema,
 		onSubmit: (values) => {
 			onSubmit(values);
 		},
@@ -77,15 +82,29 @@ export const SignInForm = ({ onSubmit }) => {
 				</Text>
 			)}
 
+			<TextInput
+				secureTextEntry
+				placeholder="Password again"
+				value={formik.values.password_again}
+				onChangeText={formik.handleChange("password_again")}
+				onBlur={formik.handleBlur("password_again")}
+				error={formik.touched.password_again && formik.errors.password_again}
+			/>
+			{formik.touched.password_again && formik.errors.password_again && (
+				<Text color="error" style={styles.errorText}>
+					{formik.errors.password_again}
+				</Text>
+			)}
+
 			<Pressable onPress={formik.handleSubmit} style={styles.button}>
-				<Text style={styles.buttonText}>Sign In</Text>
+				<Text style={styles.buttonText}>Sign Up</Text>
 			</Pressable>
 		</View>
 	);
 };
 
 const SignIn = () => {
-	const [signIn] = useSignIn();
+	const [signup] = useSignUp();
 	const navigate = useNavigate();
 	const { showNotification } = useNotification();
 
@@ -93,15 +112,14 @@ const SignIn = () => {
 		const { username, password } = values;
 
 		try {
-			const data = await signIn({ username, password });
-			if (data && data.authenticate && data.authenticate.accessToken) {
+			const data = await signup({ username, password });
+			if (data && data.createUser) {
 				navigate("/");
 			}
 		} catch (e) {
-			console.error("Sign in error:", e);
-			// Show notification on error
+			// Handle sign-up error (e.g., show notification)
 			showNotification(
-				e.message || "Invalid username or password. Please try again.",
+				e.message || "Sign up failed. Please try again.",
 				"error",
 				5000
 			);

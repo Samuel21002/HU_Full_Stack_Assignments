@@ -1,19 +1,36 @@
 import { gql } from '@apollo/client';
 
 export const GET_REPOSITORIES = gql`
-	query Repositories {
-		repositories {
+	query Repositories(
+		$after: String
+		$first: Int
+		$orderBy: AllRepositoriesOrderBy
+		$orderDirection: OrderDirection
+		$searchKeyword: String
+	) {
+		repositories(
+			after: $after
+			first: $first
+			orderBy: $orderBy
+			orderDirection: $orderDirection
+			searchKeyword: $searchKeyword
+		) {
+			totalCount
 			edges {
 				node {
 					id
+					name
+					ownerName
 					fullName
-					ratingAverage
-					reviewCount
-					stargazersCount
-					forksCount
-					ownerAvatarUrl
 					description
 					language
+					forksCount
+					stargazersCount
+					ratingAverage
+					reviewCount
+					ownerAvatarUrl
+					url
+					createdAt
 				}
 			}
 		}
