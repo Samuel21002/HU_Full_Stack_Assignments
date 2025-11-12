@@ -1,4 +1,4 @@
-import { View, StyleSheet, FlatList, Pressable, Alert } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, Alert, Platform } from "react-native";
 import { useNavigate } from "react-router-native";
 import useCurrentUser from "../hooks/useCurrentUser";
 import useDeleteReview from "../hooks/useDeleteReview";
@@ -138,26 +138,39 @@ const MyReviews = () => {
 	};
 
 	const handleDelete = (reviewId) => {
-		Alert.alert(
-			"Delete review",
-			"Are you sure you want to delete this review?",
-			[
-				{
-					text: "Cancel",
-					style: "cancel",
-				},
-				{
-					text: "Delete",
-					onPress: async () => {
-						const success = await deleteReview(reviewId, refetch);
-						if (!success) {
-							Alert.alert("Error", "Failed to delete review");
-						}
+		if (Platform.OS === 'web') {
+			const confirmed = window.confirm(
+				"Are you sure you want to delete this review?"
+			);
+			if (confirmed) {
+				deleteReview(reviewId, refetch).then((success) => {
+					if (!success) {
+						window.alert("Failed to delete review");
+					}
+				});
+			}
+		} else {
+			Alert.alert(
+				"Delete review",
+				"Are you sure you want to delete this review?",
+				[
+					{
+						text: "Cancel",
+						style: "cancel",
 					},
-					style: "destructive",
-				},
-			]
-		);
+					{
+						text: "Delete",
+						onPress: async () => {
+							const success = await deleteReview(reviewId, refetch);
+							if (!success) {
+								Alert.alert("Error", "Failed to delete review");
+							}
+						},
+						style: "destructive",
+					},
+				]
+			);
+		}
 	};
 
 	if (loading) {

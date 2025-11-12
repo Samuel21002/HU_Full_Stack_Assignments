@@ -32,6 +32,13 @@ export const GET_REPOSITORIES = gql`
 					url
 					createdAt
 				}
+				cursor
+			}
+			pageInfo {
+				startCursor
+				hasNextPage
+				hasPreviousPage
+				endCursor
 			}
 		}
 	}
@@ -47,7 +54,7 @@ export const GET_SIGNED_IN_USER = gql`
 `;
 
 export const GET_REPOSITORY = gql`
-	query Repository($repositoryId: ID!) {
+	query Repository($repositoryId: ID!, $first: Int, $after: String) {
 		repository(id: $repositoryId) {
 			id
 			fullName
@@ -59,7 +66,8 @@ export const GET_REPOSITORY = gql`
 			description
 			language
 			url
-			reviews {
+			reviews(first: $first, after: $after) {
+				totalCount
 				edges {
 					node {
 						id
@@ -71,6 +79,12 @@ export const GET_REPOSITORY = gql`
 							username
 						}
 					}
+					cursor
+				}
+				pageInfo {
+					endCursor
+					startCursor
+					hasNextPage
 				}
 			}
 		}

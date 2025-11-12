@@ -90,9 +90,9 @@ const ReviewItem = ({ review }) => {
 
 const SingleRepository = () => {
 	const { id } = useParams();
-	const { repository, reviews, loading, error } = useRepository(id);
+	const { repository, reviews, loading, error, fetchMore } = useRepository(id, { first: 3 });
 
-	if (loading) {
+	if (loading && !repository) {
 		return (
 			<View style={styles.loadingContainer}>
 				<Text>Loading repository...</Text>
@@ -108,6 +108,10 @@ const SingleRepository = () => {
 		);
 	}
 
+	const onEndReach = () => {
+		fetchMore();
+	};
+
 	return (
 		<FlatList
 			data={reviews}
@@ -116,6 +120,8 @@ const SingleRepository = () => {
 			ListHeaderComponent={() => <RepositoryInfo repository={repository} />}
 			ItemSeparatorComponent={ItemSeparator}
 			style={styles.container}
+			onEndReached={onEndReach}
+			onEndReachedThreshold={0.1}
 		/>
 	);
 };
