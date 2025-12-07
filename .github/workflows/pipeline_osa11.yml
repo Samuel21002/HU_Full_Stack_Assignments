@@ -18,6 +18,11 @@ env:
 jobs:
   deployment_pipeline:
     runs-on: ubuntu-latest
+    env:
+      TEST_MONGODB_URI: ${{ secrets.TEST_MONGODB_URI }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      SECRET: ${{ secrets.SECRET }}
+      PORT: ${{ secrets.PORT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -46,6 +51,15 @@ jobs:
       - name: Install backend dependencies
         working-directory: ./osa11/exercise 4.1-4.23_Backend
         run: npm install
+
+      - name: Debug environment
+        working-directory: ./osa11/exercise 4.1-4.23_Backend
+        run: |
+          echo "NODE_ENV is: $NODE_ENV"
+          echo "TEST_MONGODB_URI is set: ${{ secrets.TEST_MONGODB_URI != '' }}"
+          echo "SECRET is set: ${{ secrets.SECRET != '' }}"
+          node -e "console.log('TEST_MONGODB_URI:', process.env.TEST_MONGODB_URI ? 'SET' : 'NOT SET')"
+          node -e "console.log('SECRET:', process.env.SECRET ? 'SET' : 'NOT SET')"
 
       - name: Test backend
         working-directory: ./osa11/exercise 4.1-4.23_Backend
