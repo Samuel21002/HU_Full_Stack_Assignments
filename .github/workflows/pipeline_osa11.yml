@@ -68,19 +68,8 @@ jobs:
           curl -v http://localhost:${{ secrets.PORT }}/health || (echo "Health check failed" && exit 1)
       
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' '), '#skip') }}
-        run: |
-          echo "Triggering Render deployment..."
-          response=$(curl -s -w "\n%{http_code}" https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_KEY }})
-          http_code=$(echo "$response" | tail -n1)
-          body=$(echo "$response" | sed '$d')
-          echo "Response: $body"
-          echo "HTTP Status: $http_code"
-          if [ "$http_code" -ne 200 ] && [ "$http_code" -ne 201 ]; then
-            echo "Deployment trigger failed with status $http_code"
-            exit 1
-          fi
-          echo "Deployment triggered successfully!"
+        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != 'true' }}
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_KEY }}
       - name: Build Status Notification
         uses: sarisia/actions-status-discord@v1
         if: always()
