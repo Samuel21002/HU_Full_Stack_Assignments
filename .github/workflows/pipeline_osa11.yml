@@ -49,7 +49,7 @@ jobs:
 
       - name: Test backend
         working-directory: ./osa11/exercise 4.1-4.23_Backend
-        run: npm run test:all
+        run: npm run tests:all
       
       - name: Start server
         working-directory: ./osa11/exercise 4.1-4.23_Backend
