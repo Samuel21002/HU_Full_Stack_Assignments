@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'osa11/**'
   pull_request:
     branches: [main]
     types: [opened, synchronize]
+    paths:
+      - 'osa11/**'
 
 env:
   SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
@@ -21,30 +25,30 @@ jobs:
           node-version: '22'
 
       - name: Install frontend dependencies
-        working-directory: ./exercise 4.1-5.23_Frontend
+        working-directory: ./osa11/exercise 4.1-5.23_Frontend
         run: npm install
       
       - name: Test frontend
-        working-directory: ./exercise 4.1-5.23_Frontend
+        working-directory: ./osa11/exercise 4.1-5.23_Frontend
         run: npm run test
       
       - name: Lint frontend
-        working-directory: ./exercise 4.1-5.23_Frontend
+        working-directory: ./osa11/exercise 4.1-5.23_Frontend
         run: npm run lint
       
       - name: Build frontend
-        working-directory: ./exercise 4.1-5.23_Frontend
+        working-directory: ./osa11/exercise 4.1-5.23_Frontend
         run: npm run build
       
       - name: Move dist to backend
-        run: mv "./exercise 4.1-5.23_Frontend/dist" "./exercise 4.1-4.23_Backend/dist"
+        run: mv "./osa11/exercise 4.1-5.23_Frontend/dist" "./osa11/exercise 4.1-4.23_Backend/dist"
       
       - name: Install backend dependencies
-        working-directory: ./exercise 4.1-4.23_Backend
+        working-directory: ./osa11/exercise 4.1-4.23_Backend
         run: npm install
       
       - name: Start server
-        working-directory: ./exercise 4.1-4.23_Backend
+        working-directory: ./osa11/exercise 4.1-4.23_Backend
         run: npm start &
         
       - name: Wait for server to be ready
