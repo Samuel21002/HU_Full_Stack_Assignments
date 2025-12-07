@@ -1,4 +1,5 @@
 const express = require('express')
+require('express-async-errors')
 const mongoose = require('mongoose')
 const blogsRouter = require('./controllers/blogsController')
 const userRouter = require('./controllers/userController')
@@ -35,8 +36,19 @@ app.use(cors())
 app.use('/api/blogs', userExtractor, blogsRouter)
 app.use('/api/login', loginRouter)
 app.use('/api/users', userRouter)
-app.use('/health', (req, res) => {
-  res.send('ok')
+app.use('/health', async (req, res) => {
+  // MongoDB connection health check
+  if (mongoose.connection.readyState === 1) {
+    // 1 = connected, try to ping the database
+    try {
+      await mongoose.connection.db.admin().ping()
+      res.status(200).send('ok')
+    } catch (error) {
+      res.status(503).send('MongoDB ping failed')
+    }
+  } else {
+    res.status(503).send('MongoDB not connected')
+  }
 })
 
 // If tests are running, enable test controller

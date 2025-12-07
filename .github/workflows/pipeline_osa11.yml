@@ -16,7 +16,7 @@ env:
   SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
 
 jobs:
-  simple_deployment_pipeline:
+  deployment_pipeline:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -46,14 +46,18 @@ jobs:
       - name: Install backend dependencies
         working-directory: ./osa11/exercise 4.1-4.23_Backend
         run: npm install
+
+      - name: Test backend
+        working-directory: ./osa11/exercise 4.1-4.23_Backend
+        run: npm run test:all
       
       - name: Start server
         working-directory: ./osa11/exercise 4.1-4.23_Backend
         run: npm start &
         
-      - name: Wait for server to be ready
+      - name: Check MongoDB connection
         run: |
-          timeout 30 bash -c 'until curl -f http://localhost:3003; do sleep 1; done' || echo "Server might not be ready"
+          timeout 30 bash -c 'until curl -f http://localhost:3003/health; do sleep 1; done' || (echo "Health check failed" && exit 1)
       
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != 'true' }}
@@ -70,7 +74,7 @@ jobs:
           username: GitHub Actions
     
   tag_release:
-    needs: [simple_deployment_pipeline]
+    needs: [deployment_pipeline]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
