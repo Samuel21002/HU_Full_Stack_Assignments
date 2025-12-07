@@ -18,10 +18,7 @@ const {
 const app = express()
 
 // Database
-mongoose.connect(config.MONGODB_CONF, {
-  serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
-  socketTimeoutMS: 45000,
-})
+mongoose.connect(config.MONGODB_CONF)
   .then(() => {
     logger.info('connected to MongoDB')
   })

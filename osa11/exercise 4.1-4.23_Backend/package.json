@@ -3,8 +3,8 @@
     "start": "cross-env NODE_ENV=production node index.js",
     "start:test": "NODE_ENV=test node index.js",
     "dev": "cross-env NODE_ENV=dev node --watch index.js --trace-warnings",
-    "test": "cross-env NODE_ENV=test node --test --test-concurrency=1",
-    "tests:all": "cross-env NODE_ENV=test node --test --test-concurrency=1 tests/**/*.js",
+    "test": "cross-env NODE_ENV=test node --test --test-concurrency=1 --test-timeout=10000",
+    "tests:all": "cross-env NODE_ENV=test node --test --test-concurrency=1 --test-timeout=10000 tests/**/*.js",
     "lint": "eslint ."
   },
   "dependencies": {

@@ -14,16 +14,6 @@ const api = supertest(app)
 // 1. Delete pre-existing users 2. Register user 3. Log in 4. Append newly created user to every test blog entry
 before(async () => {
   try {
-    // Wait for MongoDB connection to be ready
-    if (mongoose.connection.readyState !== 1) {
-      await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error('MongoDB connection timeout')), 30000)
-        mongoose.connection.once('connected', () => {
-          clearTimeout(timeout)
-          resolve()
-        })
-      })
-    }
 
     // Clear users to ensure clean state and create new user
     await User.deleteMany({})
