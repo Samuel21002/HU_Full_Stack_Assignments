@@ -1,0 +1,81 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+env:
+  SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
+
+jobs:
+  simple_deployment_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install frontend dependencies
+        working-directory: ./exercise 4.1-5.23_Frontend
+        run: npm install
+      
+      - name: Test frontend
+        working-directory: ./exercise 4.1-5.23_Frontend
+        run: npm run test
+      
+      - name: Lint frontend
+        working-directory: ./exercise 4.1-5.23_Frontend
+        run: npm run lint
+      
+      - name: Build frontend
+        working-directory: ./exercise 4.1-5.23_Frontend
+        run: npm run build
+      
+      - name: Move dist to backend
+        run: mv "./exercise 4.1-5.23_Frontend/dist" "./exercise 4.1-4.23_Backend/dist"
+      
+      - name: Install backend dependencies
+        working-directory: ./exercise 4.1-4.23_Backend
+        run: npm install
+      
+      - name: Start server
+        working-directory: ./exercise 4.1-4.23_Backend
+        run: npm start &
+        
+      - name: Wait for server to be ready
+        run: |
+          timeout 30 bash -c 'until curl -f http://localhost:3003; do sleep 1; done' || echo "Server might not be ready"
+      
+      - name: Trigger deployment
+        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != 'true' }}
+        run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_KEY }}
+      - name: Build Status Notification
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: ${{ job.status }}
+          title: "Build Pipeline"
+          description: ${{ job.status == 'success' && 'Prerequisites succeeded' || 'Build failed! Check the details below to identify the problematic commit.' }}
+          url: ${{ job.status != 'success' && github.event.head_commit.url || '' }}
+          username: GitHub Actions
+    
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+      - name: Bump version and push tag
+        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != 'true' }}
+        uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          TAG_PREFIX: v
