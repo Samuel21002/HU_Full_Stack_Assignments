@@ -12,9 +12,6 @@ on:
     paths:
       - 'osa11/**'
 
-env:
-  SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
-
 jobs:
   deployment_pipeline:
     runs-on: ubuntu-latest
@@ -23,7 +20,6 @@ jobs:
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       SECRET: ${{ secrets.SECRET }}
       PORT: ${{ secrets.PORT }}
-      SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -68,12 +64,6 @@ jobs:
         run: |
           curl -v http://localhost:${{ secrets.PORT }}/health || (echo "Health check failed" && exit 1)
       
-      - name: Debug deployment conditions
-        run: |
-          echo "Event name: ${{ github.event_name }}"
-          echo "SKIP_DEPLOYMENT: ${{ env.SKIP_DEPLOYMENT }}"
-          echo "Should deploy: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != 'true' }}"
-      
       - name: Trigger deployment
         if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != true }}
         run: curl -v https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_KEY }}
@@ -91,8 +81,6 @@ jobs:
   tag_release:
     needs: [deployment_pipeline]
     runs-on: ubuntu-latest
-    env:
-      SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - uses: actions/checkout@v4
         with:
