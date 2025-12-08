@@ -12,9 +12,6 @@ on:
     paths:
       - 'osa11/**'
 
-env:
-  SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
-
 jobs:
   deployment_pipeline:
     runs-on: ubuntu-latest
@@ -23,6 +20,7 @@ jobs:
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       SECRET: ${{ secrets.SECRET }}
       PORT: ${{ secrets.PORT }}
+      SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -92,6 +90,8 @@ jobs:
   tag_release:
     needs: [deployment_pipeline]
     runs-on: ubuntu-latest
+    env:
+      SKIP_DEPLOYMENT: ${{ contains(join(github.event.commits.*.message, ' '), '#skip') }}
     steps:
       - uses: actions/checkout@v4
         with:
