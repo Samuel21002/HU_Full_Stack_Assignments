@@ -7,3 +7,4 @@ app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`)
   logger.info(`http://localhost:${PORT}`)
 })
+
