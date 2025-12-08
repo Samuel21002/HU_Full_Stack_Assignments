@@ -72,9 +72,9 @@ jobs:
           echo "Should deploy: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != 'true' }}"
       
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT == 'true' }}
+        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != 'true' }}
         run: |
-          echo "Triggering Render deployment..."
+          echo "Triggering Render deployment..."z
           curl -v https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_KEY }}
       - name: Build Status Notification
         uses: sarisia/actions-status-discord@v1
@@ -97,7 +97,7 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Bump version and push tag
-        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT == 'true' }}
+        if: ${{ github.event_name == 'push' && env.SKIP_DEPLOYMENT != 'true' }}
         uses: anothrNick/github-tag-action@4ed44965e0db8dab2b466a16da04aec3cc312fd8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
