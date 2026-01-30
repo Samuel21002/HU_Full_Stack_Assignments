@@ -1,0 +1,9 @@
+Script started on Sun Jan 18 14:08:48 2026
+[1m[7m%[27m[1m[0m                                                                       [0m[27m[24m[Jsamuelkovanko@Mac script-answers % [K[?2004h[7mdocker container run -it ubuntu bash[27m [K[A[35C[27md[27mo[27mc[27mk[27me[27mr[27m [27mc[27mo[27mn[27mt[27ma[27mi[27mn[27me[27mr[27m [27mr[27mu[27mn[27m [27m-[27mi[27mt[27m [27mu[27mb[27mu[27mn[27mt[27mu[27m [27mb[27ma[27ms[27mh [K[?2004l
+[?2004h]0;root@de335a90646b: /root@de335a90646b:/# mkdir usr/src/app
+[?2004l[?2004h]0;root@de335a90646b: /root@de335a90646b:/# touch usr/se rc/app/index.js
+[?2004l[?2004h]0;root@de335a90646b: /root@de335a90646b:/# [Kexit
+[?2004lexit
+[1m[7m%[27m[1m[0m                                                                       [0m[27m[24m[Jsamuelkovanko@Mac script-answers % [K[?2004heexit[?2004l
+
+Script done on Sun Jan 18 14:10:03 2026
