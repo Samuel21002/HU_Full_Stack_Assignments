@@ -1,14 +1,20 @@
-require('express-async-errors');
+require("express-async-errors");
 const express = require("express");
-const { PORT } = require('./util/config')
+const { PORT } = require("./util/config");
 const { connectToDatabase } = require("./util/db");
 const blogsRouter = require("./controllers/blogs");
-const { unknownEndpoint, errorHandler } = require('./util/middleware');
+const usersRouter = require("./controllers/users");
+const loginRouter = require("./controllers/login");
+const authorRouter = require("./controllers/authors");
+const { unknownEndpoint, errorHandler } = require("./util/middleware");
 
 const app = express();
 
 app.use(express.json());
 app.use("/api/blogs", blogsRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/login", loginRouter);
+app.use("/api/authors", authorRouter);
 
 app.use(unknownEndpoint);
 app.use(errorHandler);
