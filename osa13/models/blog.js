@@ -24,6 +24,15 @@ Blog.init(
 			type: DataTypes.INTEGER,
 			defaultValue: 0,
 		},
+		yearWritten: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+			validate: {
+				isInt: true,
+				min: 1991,
+				max: new Date().getFullYear(),
+			},
+		},
 	},
 	{
 		sequelize,

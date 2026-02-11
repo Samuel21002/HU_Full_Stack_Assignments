@@ -66,7 +66,7 @@ router.post("/", tokenExtractor, async (req, res, next) => {
 		});
 		res.json(blog);
 	} catch (error) {
-		return res.status(400).json({ error });
+		next(error);
 	}
 });
 
