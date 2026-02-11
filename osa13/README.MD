@@ -18,15 +18,7 @@
       SECRET=12345asdf
       ```
 
-5.  **Run Database Migrations:**
-    - Apply the database schema to your newly created database.
-    ```bash
-    npm run migration:up
-    ```
-
-## Running the Application
-
-To start the application in development mode with hot-reloading, run:
+5.  Runn the Application
 
 ```bash
 npm run dev
